@@ -1,0 +1,13 @@
+{
+  "resourceName": "storageuser",
+  "policyUUID": "27a93626",
+  "bucketName": "apptravelnotes00d1d8a1feb24163a04a30cff610caf5",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

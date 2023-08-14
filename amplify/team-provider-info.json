@@ -1,0 +1,39 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-apptravelnotes-dev-184100-authRole",
+      "UnauthRoleArn": "arn:aws:iam::683237975285:role/amplify-apptravelnotes-dev-184100-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::683237975285:role/amplify-apptravelnotes-dev-184100-authRole",
+      "Region": "eu-west-3",
+      "DeploymentBucketName": "amplify-apptravelnotes-dev-184100-deployment",
+      "UnauthRoleName": "amplify-apptravelnotes-dev-184100-unauthRole",
+      "StackName": "amplify-apptravelnotes-dev-184100",
+      "StackId": "arn:aws:cloudformation:eu-west-3:683237975285:stack/amplify-apptravelnotes-dev-184100/5a7d6310-3ac1-11ee-9d96-0a47b9ff1d68",
+      "AmplifyAppId": "d2jirkwh0vhuvc",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-apptravelnotes-dev-184100-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
+    },
+    "categories": {
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d2jirkwh0vhuvc",
+          "type": "manual"
+        }
+      },
+      "auth": {
+        "apptravelnotes414f6fa1": {}
+      },
+      "function": {
+        "apptravelnotesf5e9dcfb": {
+          "deploymentBucketName": "amplify-apptravelnotes-dev-184100-deployment",
+          "s3Key": "amplify-builds/apptravelnotesf5e9dcfb-48305a58717954656468-build.zip"
+        }
+      },
+      "api": {
+        "apiMonitoring": {}
+      },
+      "storage": {
+        "storageuser": {}
+      }
+    }
+  }
+}
