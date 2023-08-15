@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "paths": {
+    "/placeComments": {
+      "name": "/placeComments",
+      "lambdaFunction": "apptravelnotesf5e9dcfb",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read"
+        ]
+      }
+    }
+  }
+}

@@ -13,6 +13,20 @@
       ],
       "providerPlugin": "awscloudformation",
       "service": "API Gateway"
+    },
+    "apiamplify": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "apptravelnotesf5e9dcfb"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
     }
   },
   "auth": {
@@ -93,6 +107,10 @@
     }
   },
   "storage": {
+    "dynamonotes": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
     "storageuser": {
       "dependsOn": [],
       "providerPlugin": "awscloudformation",

@@ -29,10 +29,12 @@
         }
       },
       "api": {
-        "apiMonitoring": {}
+        "apiMonitoring": {},
+        "apiamplify": {}
       },
       "storage": {
-        "storageuser": {}
+        "storageuser": {},
+        "dynamonotes": {}
       }
     }
   }
