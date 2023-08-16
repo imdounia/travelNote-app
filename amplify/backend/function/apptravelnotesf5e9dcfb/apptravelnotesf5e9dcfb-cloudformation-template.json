@@ -160,6 +160,16 @@
                   }
                 ]
               }
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:PutItem",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:DeleteItem"
+              ],
+              "Resource": "arn:aws:dynamodb:eu-west-3:683237975285:table/dynamonotes-dev"
             }
           ]
         }

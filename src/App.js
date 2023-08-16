@@ -1,104 +1,120 @@
 import { Amplify, API, Storage } from 'aws-amplify';
-import { withAuthenticator, Heading, Button } from '@aws-amplify/ui-react';
+import { withAuthenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import awsExports from './aws-exports';
 import { useEffect, useState } from 'react';
+import { v4 as uuid } from 'uuid';
 Amplify.configure(awsExports);
 
-function App({ signOut, user }) {
-  const [ressources, setRessources] = useState(null);
-  const [fileList, setFileList] = useState([]);
+function App() {
+  const [notes, setNotes] = useState([]);
+  const [place, setPlace] = useState('');
+  const [comment, setComment] = useState('');
+  const [rate, setRate] = useState(0);
+  const [selectedFile, setSelectedFile] = useState(null);
 
-  const fetchApiData = async () => {
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
+  const fetchNotes = async () => {
     try {
-      const response = await  API.get('apiMonitoring', '/items');
-      setRessources(response);
+      const notesData = await API.get('apiamplify', '/placeComments');
+      setNotes(notesData);
     } catch (error) {
-      console.error('Error fetching API data:', error);
+      console.error('Erreur lors du chargement des notes:', error);
     }
   };
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
+    setSelectedFile(file);
+  };
 
-    try {
-      const result = await Storage.put(file.name, file, {
-        level: 'private', 
-        contentType: file.type, 
-      });
-
-      console.log('File uploaded successfully:', result.key);
-    } catch (error) {
-      console.error('Error uploading the file:', error);
-    }
-  }
-
-  const showS3Content = async () => {
+  const handleUploadImage = async () => {
+    if (selectedFile) {
+      const imageKey = `${uuid()}-${selectedFile.name}`;
       try {
-        const filesInRootFolder = await Storage.list('', { level: 'private' });
-        const filesInRootFolderArray = Object.values(filesInRootFolder);
-        const allFiles = [].concat(...filesInRootFolderArray);
-        const fileNames = allFiles
-          .filter(file => file && file.key)
-          .map(file => file.key);
-        setFileList(fileNames);
-      } catch (error) {
-        console.error('Error fetching S3 content:', error);
-      }
-    };
-
-  useEffect(() => {
-    fetchApiData();
-  }, [])
-
-
-return (
-    <div style={styles.container}>
-      <Heading level={1}>Hello {user.attributes.email}</Heading>
-      <Button onClick={signOut} style={styles.button}>Sign out</Button>
-      {JSON.stringify(ressources, null, 2)}
-      <h2>Amplify App</h2>
-      <Button onClick={fetchApiData} style={styles.button} >Charger les données de l'API</Button>
-      {ressources && (
-        <div>
-          <h2>Résultat de l'appel API :</h2>
-          <pre>{JSON.stringify(ressources, null, 2)}</pre>
-          <pre>{JSON.stringify(user.attributes.email, null, 2)}</pre>
-        </div>
-      )}
-
-    <label for="avatar">Choose a file:</label>
-
-    <input type="file" id="avatar" name="avatar" onChange={handleFileUpload}/>
-
-       <Button onClick={showS3Content} style={styles.button}>Show S3 Content</Button>
-        {Array.isArray(fileList) && fileList.length > 0 && (
-          <div>
-            <h2>List of files in S3:</h2>
-            <pre>
-              {fileList.map((file, index) => (
-                file && file.name ? file.name + "\n" : null
-              ))}
-            </pre>
-            <pre>
-              {fileList.join("\n")}
-            </pre>
-           </div>
-           
-        )}
+        await Storage.put(imageKey, selectedFile, {
+          level: 'private',
+          contentType: selectedFile.type,
+        });
         
-    </div>
-  )
-}
+        setSelectedFile(null);
+      } catch (error) {
+        console.error('Erreur lors du téléversement de l\'image:', error);
+      }
+    }
+  };
 
-const styles = {
-  container: { width: 400, margin: '0 auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 20 },
-  todo: { marginBottom: 15 },
-  input: { border: 'none', backgroundColor: '#ddd', marginBottom: 10, padding: 8, fontSize: 18 },
-  todoName: { fontSize: 20, fontWeight: 'bold' },
-  todoDescription: { marginBottom: 0 },
-  button: { backgroundColor: 'black', color: 'white', outline: 'none', fontSize: 18, padding: '12px 0px' }
+  const handleAddNote = async () => {
+    if (place && comment) {
+      const newNote = {
+        id: uuid(),
+        place,
+        comment,
+        rate,
+      };
+
+      try {
+        await API.post('apiamplify', '/placeComments', { body: newNote });
+        setNotes([...notes, newNote]);
+        setPlace('');
+        setComment('');
+        setRate(0);
+      } catch (error) {
+        console.error('Erreur lors de l\'ajout de la note:', error);
+      }
+    }
+  };
+
+  return (
+    <div className="App">
+      <h1>Mon Carnet de Voyage</h1>
+      <div className="input-section">
+        <input
+          type="file"
+          onChange={(e) => handleFileUpload(e)}
+        />
+        <button onClick={handleUploadImage}>Uploader l'image</button>
+      </div>
+      <div className="form-section">
+        <input
+          type="text"
+          placeholder="Lieu"
+          value={place}
+          onChange={(e) => setPlace(e.target.value)}
+        />
+        <textarea
+          placeholder="Commentaire"
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+        />
+        <input
+          type="number"
+          placeholder="Note"
+          value={rate}
+          onChange={(e) => setRate(Number(e.target.value))}
+        />
+        <button onClick={handleAddNote}>Ajouter une note</button>
+      </div>
+      <div className="notes-list">
+        {notes.map((note) => (
+          <div key={note.id} className="note-item">
+            <h3>{note.place}</h3>
+            <p>{note.comment}</p>
+            <p>
+              Note: {note.rate} {Array.from({ length: note.rate }).map((_, index) => <span key={index}>⭐</span>)}
+            </p>
+            {note.imageKey && (
+              <img src={Storage.get(note.imageKey)} alt={`${note.place}`} />
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default withAuthenticator(App);

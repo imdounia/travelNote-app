@@ -25,7 +25,7 @@
       "function": {
         "apptravelnotesf5e9dcfb": {
           "deploymentBucketName": "amplify-apptravelnotes-dev-184100-deployment",
-          "s3Key": "amplify-builds/apptravelnotesf5e9dcfb-48305a58717954656468-build.zip"
+          "s3Key": "amplify-builds/apptravelnotesf5e9dcfb-43377737437a592f6255-build.zip"
         }
       },
       "api": {
