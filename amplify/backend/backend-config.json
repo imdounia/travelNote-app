@@ -1,19 +1,5 @@
 {
   "api": {
-    "apiMonitoring": {
-      "dependsOn": [
-        {
-          "attributes": [
-            "Name",
-            "Arn"
-          ],
-          "category": "function",
-          "resourceName": "apptravelnotesf5e9dcfb"
-        }
-      ],
-      "providerPlugin": "awscloudformation",
-      "service": "API Gateway"
-    },
     "apiamplify": {
       "dependsOn": [
         {

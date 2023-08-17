@@ -29,7 +29,6 @@
         }
       },
       "api": {
-        "apiMonitoring": {},
         "apiamplify": {}
       },
       "storage": {
