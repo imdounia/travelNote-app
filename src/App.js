@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import '@aws-amplify/ui-react/styles.css';
 import {Amplify, API, Storage } from 'aws-amplify';
-import { withAuthenticator } from '@aws-amplify/ui-react';
+import { withAuthenticator, Button, Heading } from '@aws-amplify/ui-react';
 import awsExports from './aws-exports';
 import { v4 as uuid } from 'uuid';
 Amplify.configure(awsExports);
 
-function App() {
+function App({ signOut, user }) {
   const [notes, setNotes] = useState([]);
   const [place, setPlace] = useState('');
   const [comment, setComment] = useState('');
@@ -87,20 +88,23 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Mon Carnet de Voyage</h1>
+      <div className="header">
+        <div className="user-info">
+          <p>Hello {user.attributes.email}</p>
+        </div>
+        <Button onClick={signOut}>Sign out</Button>
+      </div>
+      <Heading level={1}>my travel notes</Heading>
       <div className="sections">
         <div className="left-section">
           <div className="input-section">
-            <input
-              type="file"
-              onChange={handleFileUpload}
-            />
-            <button onClick={handleUploadImage}>Uploader l'image</button>
+            <input type="file" onChange={handleFileUpload} />
+            <Button onClick={handleUploadImage}>Uploader l'image</Button>
           </div>
           <div className="image-section">
-          {imageKeys.map((imageKey) => (
+            {imageKeys.map((imageKey) => (
               <div key={imageKey}>
-                <p>Nom de l'image : {imageKey}</p>
+                <p>Image name : {imageKey}</p>
                 <img src={Storage.get(imageKey)} alt={imageKey} />
               </div>
             ))}
@@ -108,47 +112,54 @@ function App() {
         </div>
         <div className="right-section">
           <div className="form-section">
-          <input
-          type="text"
-          placeholder="Lieu"
-          value={place}
-          onChange={(e) => setPlace(e.target.value)}
-        />
-        <textarea
-          placeholder="Commentaire"
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Rate (0-5)"
-          value={rate}
-          onChange={(e) => setRate(Number(e.target.value))}
-          min="0"
-          max="5"
-        />
-        <button onClick={handleAddNote}>Ajouter une note</button>
-        </div>
-              <div className="notes-list">
-        {notes.map((note) => (
-          <div key={note.id} className="note-item">
-            <h3>{note.place}</h3>
-            <p>{note.comment}</p>
-            <p>
-              Note: {note.rate} {Array.from({ length: note.rate }).map((_, index) => <span key={index}>⭐</span>)}
-            </p>
-            {note.imageKey && (
-              <div>
-                <img src={Storage.get(note.imageKey)} alt={`${note.place}`} />
-                <p>Nom de l'image : {note.imageKey}</p>
-              </div>
-            )}
+          <p>Place :</p>
+            <input
+              type="text"
+              placeholder="Place"
+              value={place}
+              onChange={(e) => setPlace(e.target.value)}
+            />
+            <br/>
+            <p>Comment :</p>
+            <textarea
+              placeholder="Comment"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            />
+            <br/>
+            <p>Rate :</p>
+            <input
+              type="number"
+              placeholder="Rate (0-5)"
+              value={rate}
+              onChange={(e) => setRate(Number(e.target.value))}
+              min="0"
+              max="5"
+            /><br/>
+            <Button onClick={handleAddNote}>Ajouter une note</Button>
           </div>
-        ))}
-      </div>
+          <div className="notes-list">
+            {notes.map((note) => (
+              <div key={note.id} className="note-item">
+                <h3>{note.place}</h3>
+                <p>{note.comment}</p>
+                <p>
+                  Note: {note.rate}{' '}
+                  {Array.from({ length: note.rate }).map((_, index) => (
+                    <span key={index}>⭐</span>
+                  ))}
+                </p>
+                {note.imageKey && (
+                  <div>
+                    <img src={Storage.get(note.imageKey)} alt={`${note.place}`} />
+                    <p>Nom de l'image : {note.imageKey}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-
     </div>
   );
 }
