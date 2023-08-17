@@ -13,7 +13,6 @@ exports.handler = async (event) => {
       const { place, comment, rate } = requestBody;
       const randomNumber = Math.floor(Math.random() * 100000);
 
-      const createdAt = new Date().toISOString();
       const id = `${place}-${randomNumber}`;
 
       const params = {
