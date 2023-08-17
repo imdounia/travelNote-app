@@ -12,9 +12,11 @@ function App() {
   const [comment, setComment] = useState('');
   const [rate, setRate] = useState(0);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [imageKeys, setImageKeys] = useState([]); 
 
   useEffect(() => {
-    fetchNotes();
+    fetchImages(); // Chargez la liste des images au montage initial
+    fetchNotes(); // Chargez les notes au montage initial
   }, []);
 
   const fetchNotes = async () => {
@@ -41,9 +43,24 @@ function App() {
         });
 
         setSelectedFile(null);
+        // Rafraîchissez la liste des images après l'upload
+        fetchImages();
       } catch (error) {
         console.error('Erreur lors du téléversement de l\'image:', error);
       }
+    }
+  };
+
+  const fetchImages = async () => {
+    try {
+      // Obtenez la liste des clés d'images depuis S3
+      const imageKeysData = await Storage.list('images/', { level: 'private' });
+      const imageKeys = imageKeysData.results.map(imageKeyData => imageKeyData.key);
+      console.log(imageKeys);
+      // Mettez à jour l'état des images
+      setImageKeys(imageKeys);
+    } catch (error) {
+      console.error('Erreur lors du chargement des images:', error);
     }
   };
 
@@ -71,15 +88,27 @@ function App() {
   return (
     <div className="App">
       <h1>Mon Carnet de Voyage</h1>
-      <div className="input-section">
-        <input
-          type="file"
-          onChange={handleFileUpload}
-        />
-        <button onClick={handleUploadImage}>Uploader l'image</button>
-      </div>
-      <div className="form-section">
-        <input
+      <div className="sections">
+        <div className="left-section">
+          <div className="input-section">
+            <input
+              type="file"
+              onChange={handleFileUpload}
+            />
+            <button onClick={handleUploadImage}>Uploader l'image</button>
+          </div>
+          <div className="image-section">
+          {imageKeys.map((imageKey) => (
+              <div key={imageKey}>
+                <p>Nom de l'image : {imageKey}</p>
+                <img src={Storage.get(imageKey)} alt={imageKey} />
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="right-section">
+          <div className="form-section">
+          <input
           type="text"
           placeholder="Lieu"
           value={place}
@@ -99,8 +128,8 @@ function App() {
           max="5"
         />
         <button onClick={handleAddNote}>Ajouter une note</button>
-      </div>
-      <div className="notes-list">
+        </div>
+              <div className="notes-list">
         {notes.map((note) => (
           <div key={note.id} className="note-item">
             <h3>{note.place}</h3>
@@ -110,13 +139,16 @@ function App() {
             </p>
             {note.imageKey && (
               <div>
-                <p>Nom de l'image : {note.imageKey}</p>
                 <img src={Storage.get(note.imageKey)} alt={`${note.place}`} />
+                <p>Nom de l'image : {note.imageKey}</p>
               </div>
             )}
           </div>
         ))}
       </div>
+        </div>
+      </div>
+
     </div>
   );
 }
