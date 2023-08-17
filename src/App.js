@@ -1,8 +1,8 @@
-import { Amplify, API, Storage } from 'aws-amplify';
+import React, { useState, useEffect } from 'react';
+import './App.css';
+import {Amplify, API, Storage } from 'aws-amplify';
 import { withAuthenticator } from '@aws-amplify/ui-react';
-import '@aws-amplify/ui-react/styles.css';
 import awsExports from './aws-exports';
-import { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 Amplify.configure(awsExports);
 
@@ -26,21 +26,20 @@ function App() {
     }
   };
 
-  const handleFileUpload = async (event) => {
+  const handleFileUpload = (event) => {
     const file = event.target.files[0];
-    if (!file) return;
     setSelectedFile(file);
   };
 
   const handleUploadImage = async () => {
     if (selectedFile) {
-      const imageKey = `${uuid()}-${selectedFile.name}`;
+      const imageKey = `images/${uuid()}-${selectedFile.name}`;
       try {
         await Storage.put(imageKey, selectedFile, {
           level: 'private',
           contentType: selectedFile.type,
         });
-        
+
         setSelectedFile(null);
       } catch (error) {
         console.error('Erreur lors du téléversement de l\'image:', error);
@@ -75,7 +74,7 @@ function App() {
       <div className="input-section">
         <input
           type="file"
-          onChange={(e) => handleFileUpload(e)}
+          onChange={handleFileUpload}
         />
         <button onClick={handleUploadImage}>Uploader l'image</button>
       </div>
@@ -93,9 +92,11 @@ function App() {
         />
         <input
           type="number"
-          placeholder="Note"
+          placeholder="Rate (0-5)"
           value={rate}
           onChange={(e) => setRate(Number(e.target.value))}
+          min="0"
+          max="5"
         />
         <button onClick={handleAddNote}>Ajouter une note</button>
       </div>
@@ -108,7 +109,10 @@ function App() {
               Note: {note.rate} {Array.from({ length: note.rate }).map((_, index) => <span key={index}>⭐</span>)}
             </p>
             {note.imageKey && (
-              <img src={Storage.get(note.imageKey)} alt={`${note.place}`} />
+              <div>
+                <p>Nom de l'image : {note.imageKey}</p>
+                <img src={Storage.get(note.imageKey)} alt={`${note.place}`} />
+              </div>
             )}
           </div>
         ))}
